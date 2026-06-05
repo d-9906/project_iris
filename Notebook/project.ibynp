@@ -1,0 +1,30 @@
+import pandas as pd
+df = pd.read_csv('/workspaces/project_iris/Notebook/Iris.csv')
+df.info()
+df['Species'].unique()
+df.isna().sum()
+X=df.drop(labels=['Id','Species'],axis=1)
+Y=df[['Species']]
+from sklearn.preprocessing import StandardScaler
+scaler=StandardScaler().set_output(transform= 'pandas')
+X_pre = scaler.fit_transform(X)
+import pickle
+with open('scaler.pkl','wb') as file1: 
+    pickle.dump(scaler,file1)
+from sklearn.model_selection import train_test_split
+xtrain,xtest,ytrain,ytest=train_test_split(X_pre,Y,test_size=0.33,random_state=21)
+xtest.shape
+from sklearn.linear_model import LogisticRegression
+model=LogisticRegression()
+model.fit(xtrain,ytrain)
+model.score(xtrain,ytrain)
+model.score(xtest,ytest)
+tr_pred=model.predict(xtrain)
+ts_pred=model.predict(xtest)
+from sklearn.metrics import confusion_matrix
+cf=confusion_matrix(tr_pred,ytrain)
+cf
+with open('model.pkl', 'wb') as file2:
+    pickle.dump(model,file2)
+with open('model.pkl' , 'rb') as file4:  # rb stands for read binary
+    m= pickle.load(file4)
